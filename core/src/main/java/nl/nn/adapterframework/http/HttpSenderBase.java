@@ -64,6 +64,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
@@ -557,6 +558,22 @@ public abstract class HttpSenderBase extends TimeoutGuardSenderWithParametersBas
 	 */
 	protected abstract String extractResult(HttpResponseHandler responseHandler, ParameterResolutionContext prc) throws SenderException, IOException;
 
+	private CloseableHttpClient httpClient = null;
+	public CloseableHttpClient getHttpClient() {
+		if(httpClient == null) {
+			if (!"POST".equals(getMethodType()) && !"PUT".equals(getMethodType()) && !"REPORT".equals(getMethodType())) {
+				httpClientBuilder.setRedirectStrategy(new DefaultRedirectStrategy() {
+					@Override
+					protected boolean isRedirectable(String method) {
+						return true;
+					}
+				});
+			}
+			httpClient = httpClientBuilder.build();
+		}
+		return httpClient;
+	}
+
 	@Override
 	public String sendMessageWithTimeoutGuarded(String correlationID, String message, ParameterResolutionContext prc) throws SenderException, TimeOutException {
 		ParameterValueList pvl = null;
@@ -596,14 +613,14 @@ public abstract class HttpSenderBase extends TimeoutGuardSenderWithParametersBas
 			if(httpRequestBase == null)
 				throw new MethodNotSupportedException("could not find implementation for method ["+getMethodType()+"]");
 
-			if (!"POST".equals(getMethodType()) && !"PUT".equals(getMethodType()) && !"REPORT".equals(getMethodType())) {
-				httpClientBuilder.setRedirectStrategy(new DefaultRedirectStrategy() {
-					@Override
-					protected boolean isRedirectable(String method) {
-						return true;
-					}
-				});
-			}
+//			if (!"POST".equals(getMethodType()) && !"PUT".equals(getMethodType()) && !"REPORT".equals(getMethodType())) {
+//				httpClientBuilder.setRedirectStrategy(new DefaultRedirectStrategy() {
+//					@Override
+//					protected boolean isRedirectable(String method) {
+//						return true;
+//					}
+//				});
+//			}
 
 			if (StringUtils.isNotEmpty(getContentType())) {
 				httpRequestBase.setHeader("Content-Type", getContentType());
@@ -624,7 +641,8 @@ public abstract class HttpSenderBase extends TimeoutGuardSenderWithParametersBas
 			throw new SenderException(e);
 		}
 
-		CloseableHttpClient httpClient = httpClientBuilder.build();
+//		CloseableHttpClient httpClient = httpClientBuilder.build();
+		CloseableHttpClient httpClient = getHttpClient();
 
 		String result = null;
 		int statusCode = -1;
