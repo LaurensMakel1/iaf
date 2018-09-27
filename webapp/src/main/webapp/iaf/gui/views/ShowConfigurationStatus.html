@@ -147,9 +147,9 @@
             <div ng-init="showContent = (adapter.status == 'stopped')" ibox-expand class="ibox float-e-margins" id="{{adapter.name}}">
                 <div class="ibox-title {{(adapter.status=='warning') ? 'warning' : ((adapter.status=='stopped') ? 'danger' : 'primary')}}" title="Double-click to open">
                     <div class="ibox-tools pull-right">
-                        <a ng-click="showContent = !showContent"> <i class="fa fa-chevron-{{(showContent) ? 'down' : 'left' }}"></i></a>
+                        <a ng-click="showContent = !showContent"> <i class="fa fa-chevron-{{(showContent) ? 'up' : 'down' }}"></i></a>
                     </div>
-                    <div class="row full-width">
+                    <div class="row almost-full-width">
                         <div class="col-lg-6 col-md-12 clear">
                             <h5>{{adapter.name}} <small class="m-l-sm">&nbsp;{{adapter.description}}</small></h5>
                         </div>
