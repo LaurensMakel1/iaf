@@ -34,7 +34,7 @@ import nl.nn.adapterframework.util.AppConstants;
  * <p><b>Configuration:</b>
  * <table border="1">
  * <tr><th>attributes</th><th>description</th><th>default</th></tr>
- * <tr><td>classname</td><td>nl.nn.adapterframework.http.IbisWebServiceSender</td><td>&nbsp;</td></tr>
+ * <tr><td>className</td><td>nl.nn.adapterframework.http.IbisWebServiceSender</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setName(String) name}</td>  <td>name of the sender</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setIbisHost(String) ibisHost}</td><td>name (or ipaddress) and optinally port of the host where the ibis to be called is running</td><td>localhost</td></tr>
  * <tr><td>{@link #setIbisInstance(String) ibisInstance}</td><td>name of the ibis instance to be called</td><td>name of the current instance</td></tr>
@@ -86,7 +86,7 @@ public class IbisWebServiceSender implements ISender, HasPhysicalDestination {
 	}
 
 	protected String getEndPoint() {
-		return "http://"+getIbisHost()+"/"+getIbisInstance()+"/servlet/rpcrouter";
+		return "http://"+getIbisHost()+"/"+getIbisInstance()+"/services";
 	}
 
 	public String getPhysicalDestinationName() {

@@ -1,5 +1,5 @@
 /*
-   Copyright 2013, 2015 Nationale-Nederlanden
+   Copyright 2013, 2015, 2018 Nationale-Nederlanden
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ import org.apache.commons.lang.StringUtils;
  * <p><b>Configuration:</b>
  * <table border="1">
  * <tr><th>attributes</th><th>description</th><th>default</th></tr>
- * <tr><td>classname</td><td>nl.nn.adapterframework.jms.JMSFacade</td><td>&nbsp;</td></tr>
+ * <tr><td>className</td><td>nl.nn.adapterframework.jms.JMSFacade</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setName(String) name}</td>  <td>name of the listener</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setDestinationName(String) destinationName}</td><td>name of the JMS destination (queue or topic) to use</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setDestinationType(String) destinationType}</td><td>either <code>QUEUE</code> or <code>TOPIC</code></td><td><code>QUEUE</code></td></tr>
@@ -558,7 +558,7 @@ public class JMSFacade extends JNDIBase implements INamedObject, HasPhysicalDest
 	public String send(Session session, Destination dest, String correlationId, String message, String messageType, long timeToLive, int deliveryMode, int priority, boolean ignoreInvalidDestinationException) throws NamingException, JMSException, SenderException {
 		return send(session, dest, correlationId, message, messageType, timeToLive, deliveryMode, priority, ignoreInvalidDestinationException, null);
 	}
-	public String send(Session session, Destination dest, String correlationId, String message, String messageType, long timeToLive, int deliveryMode, int priority, boolean ignoreInvalidDestinationException, Map properties) throws NamingException, JMSException, SenderException {
+	public String send(Session session, Destination dest, String correlationId, String message, String messageType, long timeToLive, int deliveryMode, int priority, boolean ignoreInvalidDestinationException, Map<String, Object> properties) throws NamingException, JMSException, SenderException {
 		TextMessage msg = createTextMessage(session, correlationId, message);
 		MessageProducer mp;
 		try {
@@ -598,8 +598,8 @@ public class JMSFacade extends JNDIBase implements INamedObject, HasPhysicalDest
 			mp.setTimeToLive(timeToLive);
 		}
 		if (properties!=null) {
-			for (Iterator it = properties.keySet().iterator(); it.hasNext();) {
-				String key = (String)it.next();
+			for (Iterator<String> it = properties.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = properties.get(key);
 				log.debug("setting property ["+name+"] to value ["+value+"]");
 				msg.setObjectProperty(key, value);

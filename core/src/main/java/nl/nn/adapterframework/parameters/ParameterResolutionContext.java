@@ -17,6 +17,7 @@ package nl.nn.adapterframework.parameters;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,10 +47,9 @@ public class ParameterResolutionContext {
 
 	private String input;
 	private IPipeLineSession session;
-	private Source xmlSource;
-	private boolean cacheXmlSource;
+	private Map<Boolean,Source> xmlSource;
+//	private boolean cacheXmlSource;
 	private boolean namespaceAware;
-	private boolean xslt2;
 
 	/**
 	 * Construct ParameterResolutionContext with the specified parameters.
@@ -70,23 +70,17 @@ public class ParameterResolutionContext {
 	 *                       Disable caching when the ParameterResolutionContext
 	 *                       is used by multiple threads.
 	 */
-	public ParameterResolutionContext(String input, IPipeLineSession session,
-			boolean namespaceAware, boolean xslt2, boolean cacheXmlSource) {
+	public ParameterResolutionContext(String input, IPipeLineSession session, boolean namespaceAware, boolean xslt2NotUsed, boolean cacheXmlSource) {
 		this.input = input;
 		this.session = session;
 		this.namespaceAware = namespaceAware;
-		this.xslt2 = xslt2;
-		this.cacheXmlSource = cacheXmlSource;
+		if (cacheXmlSource) {
+			xmlSource=new HashMap<Boolean,Source>();
+		}
 	}
 
-	public ParameterResolutionContext(String input, IPipeLineSession session,
-			boolean namespaceAware, boolean xslt2) {
+	public ParameterResolutionContext(String input, IPipeLineSession session, boolean namespaceAware) {
 		this(input, session, namespaceAware, false, true);
-	}
-
-	public ParameterResolutionContext(String input, IPipeLineSession session,
-			boolean namespaceAware) {
-		this(input, session, namespaceAware, false);
 	}
 
 	public ParameterResolutionContext(String input, IPipeLineSession session) {
@@ -176,16 +170,21 @@ public class ParameterResolutionContext {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
+	@Deprecated 
 	public Source getInputSource() throws DomBuilderException {
-		Source xmlSource = this.xmlSource;
-		if (xmlSource == null) {
+		return getInputSource(isNamespaceAware());
+	}
+	
+	public Source getInputSource(boolean namespaceAware) throws DomBuilderException {
+		Source result = xmlSource!=null?xmlSource.get(namespaceAware):null;
+		if (result == null) {
 			log.debug("Constructing InputSource for ParameterResolutionContext");
-			xmlSource = XmlUtils.stringToSource(input,isNamespaceAware()); 
-			if (cacheXmlSource) {
-				this.xmlSource = xmlSource;
+			result = XmlUtils.stringToSource(input,namespaceAware); 
+			if (xmlSource!=null) {
+				xmlSource.put(namespaceAware, result);
 			}
 		}
-		return xmlSource;
+		return result;
 	}
 
 	/**
@@ -194,14 +193,6 @@ public class ParameterResolutionContext {
 	public String getInput() {
 		return input;
 	}
-
-	/**
-	 * @return hashtable with session variables
-	 */
-	public IPipeLineSession getSession() {
-		return session;
-	}
-
 	/**
 	 * @param input the (xml formatted) input message
 	 */
@@ -211,33 +202,22 @@ public class ParameterResolutionContext {
 	}
 
 	/**
-	 * @param session
+	 * @return hashtable with session variables
 	 */
+	public IPipeLineSession getSession() {
+		return session;
+	}
 	public void setSession(IPipeLineSession session) {
 		this.session = session;
 	}
 
-	/**
-	 */
+	@Deprecated 
 	public boolean isNamespaceAware() {
 		return namespaceAware;
 	}
-
-	/**
-	 * @param b
-	 */
+	@Deprecated 
 	public void setNamespaceAware(boolean b) {
 		namespaceAware = b;
 	}
 
-	public boolean isXslt2() {
-		return xslt2;
-	}
-
-	/**
-	 * @param b
-	 */
-	public void setXslt2(boolean b) {
-		xslt2 = b;
-	}
 }

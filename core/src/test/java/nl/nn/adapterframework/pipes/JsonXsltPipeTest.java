@@ -27,12 +27,6 @@ public class JsonXsltPipeTest extends PipeTestBase<JsonXsltPipe> {
 		return new JsonXsltPipe();
 	}
 
-	@Override
-	@Test
-	public void basicNoAdditionalConfig() throws ConfigurationException {
-		exception.expect(ConfigurationException.class);
-		super.basicNoAdditionalConfig();
-	}
 
 //	@Test
 //	public void testGetInput() throws ConfigurationException, PipeStartException, IOException, PipeRunException, DomBuilderException, TransformerException {
@@ -73,6 +67,7 @@ public class JsonXsltPipeTest extends PipeTestBase<JsonXsltPipe> {
 
 	public void assertJsonEqual(String description, String jsonExp, String jsonAct) {
 		JsonStructure jExp=string2Json(jsonExp);
+		log.debug("jsonAct: ["+jsonAct+"]");
 		JsonStructure jAct=string2Json(jsonAct);
 		assertEquals(description,jExp.toString(),jAct.toString());
 		//assertEquals(description,inputJson,jsonOut);

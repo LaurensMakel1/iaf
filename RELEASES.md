@@ -9,8 +9,36 @@ Upcoming
 --------
 
 [JavaDocs](http://maven.ibissource.org/iaf/apidocs/index.html)
-[Commits](https://github.com/ibissource/iaf/compare/v7.1-B3...HEAD)
+[Commits](https://github.com/ibissource/iaf/compare/v7.1-B4...HEAD)
 [![Build Status](https://travis-ci.org/ibissource/iaf.png)](https://travis-ci.org/ibissource/iaf)
+
+- Fix NPE in HttpSender when no charset is supplied in multipart response
+- Modify GetFromSession to get key from input as well as sessionKey
+- Refactor Base64Pipe to handle string, bytes and streams as both input and output
+- Upgrade ibis-ladybug to latest version. See ladybug [releases.md](https://github.com/ibissource/ibis-ladybug/blob/master/RELEASES.md) for more info
+- Add SambaSender to retrieve, upload and modify files through the SMB protocol
+- Add parameters to JmsListeners to add JMS headers to the response message
+- Add attribute to JmsSenders to read JMS headers and add them to the pipeline session
+- Fix NPE in ErrorMessageFormatter when used with dynamic configurations
+
+
+
+7.1-B4
+---
+
+[Commits](https://github.com/ibissource/iaf/compare/v7.1-B3...v7.1-B4)
+[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.1-B4)](https://travis-ci.org/ibissource/iaf)
+
+
+- Prevent poll guard to stop and start listener when recovering
+- Upgrade Ladybug to fix rerun, title tag and rerun of saved test report
+- Replace old Apache RPCRouter with CXF WebService provider
+- Make rowlock optional in MS SQL prepareQueryTextForWorkQueueReading
+
+
+### Non backwards compatible changes
+
+- In order for CXF to use the Java standard WebServices it requires the `javax.xml.ws.WebServicePermission publishEndpoint` permission!
 
 
 

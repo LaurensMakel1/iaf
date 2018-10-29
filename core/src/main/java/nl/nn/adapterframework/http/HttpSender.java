@@ -33,7 +33,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.servlet.http.HttpServletResponse;
 
-import jcifs.util.Base64;
 import nl.nn.adapterframework.configuration.ConfigurationException;
 import nl.nn.adapterframework.core.HasPhysicalDestination;
 import nl.nn.adapterframework.core.IPipeLineSession;
@@ -48,6 +47,7 @@ import nl.nn.adapterframework.util.Misc;
 import nl.nn.adapterframework.util.XmlBuilder;
 import nl.nn.adapterframework.util.XmlUtils;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -78,7 +78,7 @@ import org.w3c.dom.Node;
  * <p><b>Configuration:</b>
  * <table border="1">
  * <tr><th>attributes</th><th>description</th><th>default</th></tr>
- * <tr><td>classname</td><td>nl.nn.adapterframework.http.HttpSender</td><td>&nbsp;</td></tr>
+ * <tr><td>className</td><td>nl.nn.adapterframework.http.HttpSender</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setName(String) name}</td><td>name of the sender</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setUrl(String) url}</td><td>URL or base of URL to be used </td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setUrlParam(String) urlParam}</td><td>parameter that is used to obtain url; overrides url-attribute.</td><td>url</td></tr>
@@ -321,10 +321,10 @@ public class HttpSender extends HttpSenderBase implements HasPhysicalDestination
 			HttpPost hmethod = new HttpPost(uri.build());
 
 			if (!isMultipart() && StringUtils.isEmpty(getMultipartXmlSessionKey())) {
-				List<NameValuePair> Parameters = new ArrayList<NameValuePair>();
+				List<NameValuePair> requestFormElements = new ArrayList<NameValuePair>();
 
 				if (StringUtils.isNotEmpty(getInputMessageParam())) {
-					Parameters.add(new BasicNameValuePair(getInputMessageParam(),message));
+					requestFormElements.add(new BasicNameValuePair(getInputMessageParam(),message));
 					log.debug(getLogPrefix()+"appended parameter ["+getInputMessageParam()+"] with value ["+message+"]");
 				}
 				if (parameters!=null) {
@@ -336,13 +336,13 @@ public class HttpSender extends HttpSenderBase implements HasPhysicalDestination
 							hmethod.addHeader(name,value);
 							if (log.isDebugEnabled()) log.debug(getLogPrefix()+"appended header ["+name+"] with value ["+value+"]");
 						} else {
-							Parameters.add(new BasicNameValuePair(name,value));
+							requestFormElements.add(new BasicNameValuePair(name,value));
 							if (log.isDebugEnabled()) log.debug(getLogPrefix()+"appended parameter ["+name+"] with value ["+value+"]");
 						}
 					}
 				}
 				try {
-					hmethod.setEntity(new UrlEncodedFormEntity(Parameters));
+					hmethod.setEntity(new UrlEncodedFormEntity(requestFormElements));
 				} catch (UnsupportedEncodingException e) {
 					throw new SenderException(getLogPrefix()+"unsupported encoding for one or more post parameters");
 				}
@@ -552,8 +552,9 @@ public class HttpSender extends HttpSenderBase implements HasPhysicalDestination
 		if (bytes == null) {
 			return null;
 		}
+
 		if (log.isDebugEnabled()) log.debug(getLogPrefix()+"base64 encodes response body");
-		return Base64.encode(bytes);
+		return Base64.encodeBase64String(bytes);
 	}
 
 	public static String handleMultipartResponse(HttpResponseHandler httpHandler, ParameterResolutionContext prc) throws IOException, SenderException {
@@ -568,7 +569,11 @@ public class HttpSender extends HttpSenderBase implements HasPhysicalDestination
 				BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 				boolean lastPart = mimeMultipart.getCount() == i + 1;
 				if (i == 0) {
-					String charset = ContentType.parse(bodyPart.getContentType()).getCharset().name();
+					String charset = Misc.DEFAULT_INPUT_STREAM_ENCODING;
+					ContentType contentType = ContentType.parse(bodyPart.getContentType());
+					if(contentType.getCharset() != null)
+						charset = contentType.getCharset().name();
+
 					InputStream bodyPartInputStream = bodyPart.getInputStream();
 					result = Misc.streamToString(bodyPartInputStream, charset);
 					if (lastPart) {

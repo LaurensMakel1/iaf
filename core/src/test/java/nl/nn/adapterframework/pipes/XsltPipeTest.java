@@ -23,12 +23,6 @@ public class XsltPipeTest extends PipeTestBase<XsltPipe> {
 		return new XsltPipe();
 	}
 
-	@Override
-	@Test
-	public void basicNoAdditionalConfig() throws ConfigurationException {
-		exception.expect(ConfigurationException.class);
-		super.basicNoAdditionalConfig();
-	}
 	
 	@Test
 	public void basic() throws ConfigurationException, PipeStartException, IOException, PipeRunException {

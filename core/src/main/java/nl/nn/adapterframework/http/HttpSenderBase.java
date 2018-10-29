@@ -91,7 +91,7 @@ import org.htmlcleaner.TagNode;
  * <p><b>Configuration:</b>
  * <table border="1">
  * <tr><th>attributes</th><th>description</th><th>default</th></tr>
- * <tr><td>classname</td><td>nl.nn.adapterframework.http.HttpSender</td><td>&nbsp;</td></tr>
+ * <tr><td>className</td><td>nl.nn.adapterframework.http.HttpSender</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setName(String) name}</td><td>name of the sender</td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setUrl(String) url}</td><td>URL or base of URL to be used </td><td>&nbsp;</td></tr>
  * <tr><td>{@link #setUrlParam(String) urlParam}</td><td>parameter that is used to obtain url; overrides url-attribute.</td><td>url</td></tr>
@@ -732,9 +732,9 @@ public abstract class HttpSenderBase extends TimeoutGuardSenderWithParametersBas
 
 				if (transformerPool != null) {
 					log.debug(getLogPrefix() + " transforming result [" + result + "]");
-					ParameterResolutionContext prc_xslt = new ParameterResolutionContext(result, null, true, true);
+					ParameterResolutionContext prc_xslt = new ParameterResolutionContext(result, null, true);
 					try {
-						result = transformerPool.transform(prc_xslt.getInputSource(), null);
+						result = transformerPool.transform(prc_xslt.getInputSource(true), null);
 					} catch (Exception e) {
 						throw new SenderException("Exception on transforming input", e);
 					}
