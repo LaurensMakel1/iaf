@@ -6827,7 +6827,8 @@ body.body-small .vote-icon {
 .messagelog ul > li.warning {
   color: hsl(32, 92%, 63%);
 }
-.messagelog ul > li.error {
+.messagelog ul > li.error,
+.messagelog ul > li.danger {
   color: hsl(354, 81%, 60%);
 }
 .messagelog ul > li:last-child {
