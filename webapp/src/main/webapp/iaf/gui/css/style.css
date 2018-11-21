@@ -4352,6 +4352,9 @@ a.close-canvas-menu:hover {
 .m-r-md {
   margin-right: 20px;
 }
+.m-r-md-l {
+  margin-right: 25px;
+}
 .m-r-lg {
   margin-right: 30px;
 }
@@ -6900,4 +6903,14 @@ body.body-small .vote-icon {
 
 .ibox-notify .actions .selections .selection label {
   margin: 0 5px;
+}
+input[type=checkbox].resend {
+  vertical-align:middle; 
+  margin: 0.5em 1em;
+}
+.i-b {
+  display: inline-block;
+}
+.table.no-border-top tr:first-child td {
+  border-top: none;
 }
