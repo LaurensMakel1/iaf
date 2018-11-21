@@ -1486,30 +1486,30 @@ a.list-group-item.active:focus {
 .elements-list .list-group-item {
   border-left: none;
   border-right: none;
-  padding: 15px 25px;
 }
 .elements-list .list-group-item:first-child {
   border-left: none;
   border-right: none;
   border-top: none !important;
 }
+.alert li.list-group-item:last-child {
+  margin-bottom: 20px;
+}
+.alert-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
 .elements-list .list-group {
   margin-bottom: 0;
 }
 .elements-list a {
   color: inherit;
-}
-.elements-list .list-group-item.active,
-.elements-list .list-group-item:hover {
-  background: #f3f3f4;
-  color: inherit;
-  border-color: #e7eaec;
-  /*border-bottom: 1px solid #e7eaec;*/
-  /*border-top: 1px solid #e7eaec;*/
-  border-radius: 0;
-}
-.elements-list li.active {
-  transition: none;
 }
 .element-detail-box {
   padding: 25px;
@@ -3359,7 +3359,7 @@ body.boxed-layout #wrapper {
   display: block;
   overflow: hidden;
 }
-a {
+a, .pointer {
   cursor: pointer;
 }
 a:hover,
@@ -3594,6 +3594,9 @@ body.body-small .footer.fixed {
   line-height: 1.42857;
   padding: 5px;
   vertical-align: top;
+}
+.table-nohead > tbody > tr:first-child > td {
+  border-top: none;
 }
 /* PANELS */
 .panel.blank-panel {
@@ -4198,6 +4201,9 @@ a.close-canvas-menu:hover {
 }
 .p-xl {
   padding: 40px;
+}
+.p-n {
+  padding: 0;
 }
 .p-w-xs {
   padding: 0 10px;
@@ -6798,56 +6804,7 @@ body.body-small .vote-icon {
   }
 }
 
-/* MESSAGE LOG */
-
-/* Collapseable ibox-title */
-.ibox-title.collapseable h4 {
-  display: inline-block;
-}
-.ibox-title.collapseable .ibox-tools a {
-  line-height: 28px;
-}
-.messagelog {
-  padding: 0px 15px;
-}
-.messagelog div.col-md-12 {
-  padding: 0;
-}
-.messagelog ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.messagelog ul > li {
-  line-height: 35px;
-  border-bottom: 1px solid;
-  border-color: hsl(204, 12%, 92%);
-  padding-left: 20px;
-}
-.messagelog ul > li.warning {
-  color: hsl(32, 92%, 63%);
-}
-.messagelog ul > li.error,
-.messagelog ul > li.danger {
-  color: hsl(354, 81%, 60%);
-}
-.messagelog ul > li:last-child {
-  border-bottom: unset;
-}
-.messagelog ul > li:nth-of-type(odd) {
-  background-color: hsl(0, 0%, 98%);
-}
-.messagelog ul > li i {
-  margin-right: 10px;
-}
-.messagelog ul > li i.fa.fa-times {
-  margin-left: -3px;
-  margin-right: 8px;
-}
-.messagelog ul > li i.fa.fa-warning {
-  margin-left: -3px;
-  margin-right: 5px;
-}
-body.no-scrollbar {
-  overflow: hidden !important;
+.fa-size-up {
+  margin-top: 3px;
+  font-size: 16px;
 }

@@ -88,26 +88,18 @@ angular.module('iaf.beheerconsole')
 	$scope.primaryAlert;
 	$scope.secondaryAlert;
 
-	$scope.addAlert = function(type, message) {
-		var exists = false;
-		for(alert in $scope.alerts) {
-			if( $scope.alerts[alert].message == message)
-				exists = true;
-		}
-		if(!exists)
-			$scope.alerts.push({type: type, message: message});
-
-		$scope.alertsCount[type]++
-		if($scope.alertsCount['danger'] > 0){
-			$scope.primaryAlert = 'danger';
-
-			if($scope.alertsCount['warning'] > 0){
-				$scope.secondaryAlert = 'warning';
-			}
-		}
-		else {
-			$scope.primaryAlert = 'warning';
-		}
+	$scope.addAlert = function(type, configuration, message) {
+		$scope.alerts.push({
+			type: type,
+			configuration: configuration,
+			message: message
+		});
+	};
+	$scope.addWarning = function(configuration, message) {
+		$scope.addAlert("warning", configuration, message);
+	};
+	$scope.addException = function(configuration, message) {
+		$scope.addAlert("danger", configuration, message);
 	};
 
 	$scope.closeAlert = function(index) {
@@ -157,42 +149,43 @@ angular.module('iaf.beheerconsole')
 		dimension('application.version', appConstants["application.version"]);
 
 		Api.Get("server/warnings", function(configurations) {
+			configurations['All'] = {messages:configurations.messages};
+			delete configurations.messages;
+
+			configurations['All'].errorStoreCount = configurations.totalErrorStoreCount;
+			delete configurations.totalErrorStoreCount;
+
 			for(i in configurations) {
 				var configuration = configurations[i];
 				if(configuration.exception)
-					$scope.addAlert("danger", "Configuration: "+i+" - "+configuration.exception);
+					$scope.addException(i, configuration.exception);
 				if(configuration.warnings) {
 					for(x in configuration.warnings) {
-						$scope.addAlert("warning", "Configuration: "+i+" - "+configuration.warnings[x]);
+						$scope.addWarning(i, configuration.warnings[x]);
 					}
 				}
-				if(configuration.errorStoreCount > 1) {
-					$scope.addAlert("danger", "Configuration: "+i+" - Errorlog contains "+configuration.errorStoreCount+" records. Service management should check whether this record has to be resent or deleted");
-				}
-				else if(configuration.errorStoreCount == 1) {
-					$scope.addAlert("danger", "Configuration: "+i+" - Errorlog contains 1 record. Service management should check whether this record has to be resent or deleted");
-				}
-				else if(configuration.errorStoreCount == -1) {
-					$scope.addAlert("danger", "Configuration: "+i+" - Errorlog might contain records. This is unknown because errorStore.count.show is not set to true");
+
+				configuration.messageLevel = "INFO";
+				for(x in configuration.messages) {
+					var level = configuration.messages[x].level;
+					if(level == "WARN" && configuration.messageLevel != "ERROR")
+						configuration.messageLevel = "WARN";
+					if(level == "ERROR")
+						configuration.messageLevel = "ERROR";
 				}
 			}
 
-			var messageLog = configurations;
-			messageLog['All'] = {messages:configurations.messages};
-			delete messageLog.messages;
-
-			messageLog['All'].errorStoreCount = messageLog.totalErrorStoreCount;
-			delete messageLog.totalErrorStoreCount;
-
-			$scope.messageLog = messageLog;
+ 			$scope.messageLog = configurations;
 		});
 
+		var raw_adapter_data = {};
 		Poller.add("adapters?expanded=all", function(allAdapters) {
 			for(adapterName in allAdapters) {
 				var adapter = allAdapters[adapterName];
 
-				var oldAdapterData = $rootScope.adapters[adapter.name];
-				if(JSON.stringify(oldAdapterData) != JSON.stringify(adapter)) {
+				if(raw_adapter_data[adapter.name] != JSON.stringify(adapter)) {
+					raw_adapter_data[adapter.name] = JSON.stringify(adapter);
+
 					adapter.status = "started";
 
 					for(x in adapter.receivers) {

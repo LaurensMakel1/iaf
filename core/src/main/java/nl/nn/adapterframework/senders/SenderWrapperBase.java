@@ -1,5 +1,5 @@
 /*
-   Copyright 2013 Nationale-Nederlanden
+   Copyright 2013, 2018 Nationale-Nederlanden
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,21 +15,20 @@
 */
 package nl.nn.adapterframework.senders;
 
+import org.apache.commons.lang.StringUtils;
+
 import nl.nn.adapterframework.cache.ICacheAdapter;
 import nl.nn.adapterframework.cache.ICacheEnabled;
+import nl.nn.adapterframework.configuration.Configuration;
 import nl.nn.adapterframework.configuration.ConfigurationException;
 import nl.nn.adapterframework.core.ISender;
 import nl.nn.adapterframework.core.SenderException;
 import nl.nn.adapterframework.core.SenderWithParametersBase;
 import nl.nn.adapterframework.core.TimeOutException;
 import nl.nn.adapterframework.parameters.ParameterResolutionContext;
-import nl.nn.adapterframework.pipes.AbstractPipe;
-import nl.nn.adapterframework.pipes.PipeAware;
 import nl.nn.adapterframework.processors.SenderWrapperProcessor;
 import nl.nn.adapterframework.statistics.HasStatistics;
 import nl.nn.adapterframework.util.ClassUtils;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Baseclass for Wrappers for senders, that allows to get input from a session variable, and to store output in a session variable.
@@ -52,7 +51,7 @@ import org.apache.commons.lang.StringUtils;
  * @author  Gerrit van Brakel
  * @since   4.9
  */
-public abstract class SenderWrapperBase extends SenderWithParametersBase implements HasStatistics, ICacheEnabled, PipeAware {
+public abstract class SenderWrapperBase extends SenderWithParametersBase implements HasStatistics, ICacheEnabled, ConfigurationAware {
 
 	private String getInputFromSessionKey; 
 	private String getInputFromFixedValue=null;
@@ -60,8 +59,9 @@ public abstract class SenderWrapperBase extends SenderWithParametersBase impleme
 	private boolean preserveInput=false; 
 	protected SenderWrapperProcessor senderWrapperProcessor;
 	private ICacheAdapter cache=null;
-	private AbstractPipe pipe;
+	private Configuration configuration;
 
+	@Override
 	public void configure() throws ConfigurationException {
 		super.configure();
 		if (!isSenderConfigured()) {
@@ -75,6 +75,7 @@ public abstract class SenderWrapperBase extends SenderWithParametersBase impleme
 		}
 	}
 
+	@Override
 	public void open() throws SenderException {
 		if (cache!=null) {
 			cache.open();
@@ -82,6 +83,7 @@ public abstract class SenderWrapperBase extends SenderWithParametersBase impleme
 		super.open();
 	}
 
+	@Override
 	public void close() throws SenderException {
 		try {
 			super.close();
@@ -96,6 +98,7 @@ public abstract class SenderWrapperBase extends SenderWithParametersBase impleme
 
 	public abstract String doSendMessage(String correlationID, String message, ParameterResolutionContext prc) throws SenderException, TimeOutException; 
 
+	@Override
 	public String sendMessage(String correlationID, String message, ParameterResolutionContext prc) throws SenderException, TimeOutException {
 		if (senderWrapperProcessor!=null) {
 			return senderWrapperProcessor.sendMessage(this, correlationID, message, prc);
@@ -103,18 +106,22 @@ public abstract class SenderWrapperBase extends SenderWithParametersBase impleme
 		return doSendMessage(correlationID, message, prc);
 	}
 
+	@Override
 	public String getLogPrefix() {
 		return ClassUtils.nameOf(this)+" ["+getName()+"] ";
 	}
 
+	@Override
 	public void registerCache(ICacheAdapter cache) {
 		this.cache=cache;
 	}
+	@Override
 	public ICacheAdapter getCache() {
 		return cache;
 	}
 
 	
+	@Override
 	public abstract boolean isSynchronous() ;
 
 	public abstract void setSender(ISender sender);
@@ -151,11 +158,13 @@ public abstract class SenderWrapperBase extends SenderWithParametersBase impleme
 		this.senderWrapperProcessor = senderWrapperProcessor;
 	}
 
-	public void setPipe(AbstractPipe pipe) {
-		this.pipe = pipe;
+	@Override
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
 	}
-	public AbstractPipe getPipe() {
-		return pipe;
+	@Override
+	public Configuration getConfiguration() {
+		return configuration;
 	}
 
 }
