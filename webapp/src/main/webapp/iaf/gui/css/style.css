@@ -6914,3 +6914,6 @@ input[type=checkbox].resend {
 .table.no-border-top tr:first-child td {
   border-top: none;
 }
+.pointer {
+  cursor: pointer;
+}
