@@ -6804,8 +6804,6 @@ body.body-small .vote-icon {
 .fa-size-up {
   margin-top: 3px;
   font-size: 16px;
-<<<<<<< Updated upstream
-=======
 }
 
 
@@ -6923,5 +6921,4 @@ body.body-small .vote-icon {
 .btn-outline.btn-danger[disabled].btn-disabled,
 .btn-outline.btn-danger[disabled].btn-disabled:hover {
   color: #ed5565;
->>>>>>> Stashed changes
 }
